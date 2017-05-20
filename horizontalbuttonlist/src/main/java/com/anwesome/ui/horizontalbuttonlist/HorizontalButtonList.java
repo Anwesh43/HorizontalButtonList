@@ -14,9 +14,9 @@ public class HorizontalButtonList {
         this.activity = activity;
         horizontalButtonView = new HorizontalButtonView(activity);
     }
-    public void addButton() {
+    public void addButton(OnClickListener onClickListener) {
         if(!isShown) {
-            horizontalButtonView.addHorizontalButton();
+            horizontalButtonView.addHorizontalButton(onClickListener);
         }
     }
     public void show() {

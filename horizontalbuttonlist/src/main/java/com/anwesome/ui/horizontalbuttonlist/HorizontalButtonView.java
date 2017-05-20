@@ -26,9 +26,9 @@ public class HorizontalButtonView extends View {
     public HorizontalButtonView(Context context) {
         super(context);
     }
-    public void addHorizontalButton() {
+    public void addHorizontalButton(com.anwesome.ui.horizontalbuttonlist.OnClickListener onClickListener) {
         if(time == 0) {
-            horizontalButtons.add(new HorizontalButton());
+            horizontalButtons.add(new HorizontalButton(onClickListener));
         }
     }
     public void removeOtherButton(float factor) {
@@ -85,9 +85,10 @@ public class HorizontalButtonView extends View {
     }
     private class HorizontalButton {
         private float x,y,w,h,scale = 0;
+        private com.anwesome.ui.horizontalbuttonlist.OnClickListener onClickListener;
         private int index;
-        public HorizontalButton() {
-
+        public HorizontalButton(com.anwesome.ui.horizontalbuttonlist.OnClickListener onClickListener) {
+            this.onClickListener = onClickListener;
         }
         public void setDimension(float x,float y,float w,float h) {
             this.x = x;
@@ -150,6 +151,10 @@ public class HorizontalButtonView extends View {
                 isAnimating = false;
                 if (animFlag == 1) {
                     start();
+                    if(tappedButton != null && tappedButton.onClickListener!=null) {
+                        tappedButton.onClickListener.onClick();
+                    }
+
                 }
                 else {
                     tappedButton = null;
