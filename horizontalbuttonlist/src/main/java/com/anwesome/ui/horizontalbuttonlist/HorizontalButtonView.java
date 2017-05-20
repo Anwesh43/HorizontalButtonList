@@ -21,6 +21,7 @@ public class HorizontalButtonView extends View {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int time = 0,w,h;
     private HorizontalButton tappedButton = null;
+    private AnimationHandler animationHandler = new AnimationHandler();
     private List<HorizontalButton> horizontalButtons = new ArrayList<>();
     public HorizontalButtonView(Context context) {
         super(context);
@@ -33,9 +34,12 @@ public class HorizontalButtonView extends View {
     public void removeOtherButton(float factor) {
         if(tappedButton != null) {
             tappedButton.fill(factor);
+            int i = 0;
             for (HorizontalButton horizontalButton:horizontalButtons) {
                 if(horizontalButton != tappedButton) {
                     horizontalButton.move(factor);
+                    horizontalButton.setIndex(i);
+                    i++;
                 }
             }
         }
@@ -65,7 +69,11 @@ public class HorizontalButtonView extends View {
         for(HorizontalButton horizontalButton:horizontalButtons) {
             if(horizontalButton.handleTap(event.getX(),event.getY())) {
                 tappedButton = horizontalButton;
+                break;
             }
+        }
+        if(tappedButton!=null) {
+            animationHandler.start();
         }
         return true;
     }
@@ -132,6 +140,9 @@ public class HorizontalButtonView extends View {
             if(isAnimating) {
                 if (animFlag == 0) {
                     start();
+                }
+                else {
+                    tappedButton = null;
                 }
                 animFlag = animFlag == 0 ? 1 : 0;
                 isAnimating = false;
