@@ -8,24 +8,56 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by anweshmishra on 20/05/17.
  */
 public class HorizontalButtonView extends View {
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private int time = 0,w,h;
+    private HorizontalButton tappedButton = null;
+    private List<HorizontalButton> horizontalButtons = new ArrayList<>();
     public HorizontalButtonView(Context context) {
         super(context);
     }
+    public void addHorizontalButton() {
+        if(time == 0) {
+            horizontalButtons.add(new HorizontalButton());
+        }
+    }
     public void onDraw(Canvas canvas) {
-
+        if(time == 0 && horizontalButtons.size()>0) {
+            w = canvas.getWidth();
+            h = canvas.getHeight();
+            int width = 4*w/5,gap = h/(2*horizontalButtons.size()+1);
+            float y = gap;
+            for(HorizontalButton horizontalButton:horizontalButtons) {
+                horizontalButton.setDimension(w/2-width/2,y,width,gap);
+                y += 2*gap;
+            }
+        }
+        for(HorizontalButton horizontalButton:horizontalButtons) {
+            horizontalButton.draw(canvas,paint);
+        }
+        time++;
     }
     public boolean onTouchEvent(MotionEvent event) {
+        for(HorizontalButton horizontalButton:horizontalButtons) {
+            if(horizontalButton.handleTap(event.getX(),event.getY())) {
+                tappedButton = horizontalButton;
+            }
+        }
         return true;
     }
     private class HorizontalButton {
         private float x,y,w,h,scale = 0;
         private int index;
-        public HorizontalButton(float x,float y,float w,float h) {
+        public HorizontalButton() {
+
+        }
+        public void setDimension(float x,float y,float w,float h) {
             this.x = x;
             this.y = y;
             this.w = w;
@@ -55,6 +87,9 @@ public class HorizontalButtonView extends View {
             if(index %2 == 0) {
                 x = targetX*factor;
             }
+        }
+        public int hashCode() {
+            return (int)(x+y+w+h+scale);
         }
     }
 }
