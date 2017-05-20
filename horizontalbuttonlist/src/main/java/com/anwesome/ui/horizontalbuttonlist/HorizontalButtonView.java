@@ -1,5 +1,8 @@
 package com.anwesome.ui.horizontalbuttonlist;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -105,6 +108,39 @@ public class HorizontalButtonView extends View {
         }
         public int hashCode() {
             return (int)(x+y+w+h+scale);
+        }
+    }
+    private class AnimationHandler extends AnimatorListenerAdapter implements ValueAnimator.AnimatorUpdateListener{
+        private ValueAnimator animTracker = ValueAnimator.ofFloat(0,1);
+        private int animFlag = 0;
+        private boolean isAnimating = false;
+        public AnimationHandler() {
+            animTracker.setDuration(500);
+            animTracker.addUpdateListener(this);
+            animTracker.addListener(this);
+        }
+        public void onAnimationUpdate(ValueAnimator valueAnimator) {
+            if(isAnimating) {
+                if (animFlag == 0) {
+                    removeOtherButton((float)valueAnimator.getAnimatedValue());
+                } else {
+                    moveTappedButton((float)valueAnimator.getAnimatedValue());
+                }
+            }
+        }
+        public void onAnimationEnd(Animator animator) {
+            if(isAnimating) {
+                if (animFlag == 0) {
+                    start();
+                }
+                animFlag = animFlag == 0 ? 1 : 0;
+                isAnimating = false;
+            }
+        }
+        public void start() {
+            if(!isAnimating) {
+                animTracker.start();
+            }
         }
     }
 }
