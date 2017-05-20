@@ -42,22 +42,26 @@ public class HorizontalButtonView extends View {
                     i++;
                 }
             }
+            postInvalidate();
         }
     }
     public void moveTappedButton(float factor) {
         if(tappedButton != null) {
             tappedButton.move(factor);
+            postInvalidate();
         }
     }
     public void onDraw(Canvas canvas) {
         if(time == 0 && horizontalButtons.size()>0) {
             w = canvas.getWidth();
             h = canvas.getHeight();
-            int width = 4*w/5,gap = h/(2*horizontalButtons.size()+1);
+            int width = 4*w/5,gap = h/(2*horizontalButtons.size()+1),i=0;
             float y = gap;
             for(HorizontalButton horizontalButton:horizontalButtons) {
                 horizontalButton.setDimension(w/2-width/2,y,width,gap);
+                horizontalButton.setIndex(i);
                 y += 2*gap;
+                i++;
             }
         }
         for(HorizontalButton horizontalButton:horizontalButtons) {
@@ -66,14 +70,16 @@ public class HorizontalButtonView extends View {
         time++;
     }
     public boolean onTouchEvent(MotionEvent event) {
-        for(HorizontalButton horizontalButton:horizontalButtons) {
-            if(horizontalButton.handleTap(event.getX(),event.getY())) {
-                tappedButton = horizontalButton;
-                break;
+        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+            for (HorizontalButton horizontalButton : horizontalButtons) {
+                if (horizontalButton.handleTap(event.getX(), event.getY())) {
+                    tappedButton = horizontalButton;
+                    break;
+                }
             }
-        }
-        if(tappedButton!=null) {
-            animationHandler.start();
+            if (tappedButton != null) {
+                animationHandler.start();
+            }
         }
         return true;
     }
@@ -109,10 +115,11 @@ public class HorizontalButtonView extends View {
             scale = factor;
         }
         public void move(float factor) {
-            float targetX = w;
-            if(index %2 == 0) {
-                x = targetX*factor;
+            float targetX = w+w/4;
+            if(index %2 == 1) {
+                targetX*=-1;
             }
+            x = targetX*factor;
         }
         public int hashCode() {
             return (int)(x+y+w+h+scale);
@@ -137,20 +144,23 @@ public class HorizontalButtonView extends View {
             }
         }
         public void onAnimationEnd(Animator animator) {
+
             if(isAnimating) {
-                if (animFlag == 0) {
+                animFlag = animFlag == 0 ? 1 : 0;
+                isAnimating = false;
+                if (animFlag == 1) {
                     start();
                 }
                 else {
                     tappedButton = null;
                 }
-                animFlag = animFlag == 0 ? 1 : 0;
-                isAnimating = false;
+
             }
         }
         public void start() {
             if(!isAnimating) {
                 animTracker.start();
+                isAnimating = true;
             }
         }
     }
