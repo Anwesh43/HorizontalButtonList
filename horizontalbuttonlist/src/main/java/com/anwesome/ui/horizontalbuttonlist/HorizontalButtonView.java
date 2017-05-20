@@ -27,6 +27,21 @@ public class HorizontalButtonView extends View {
             horizontalButtons.add(new HorizontalButton());
         }
     }
+    public void removeOtherButton(float factor) {
+        if(tappedButton != null) {
+            tappedButton.fill(factor);
+            for (HorizontalButton horizontalButton:horizontalButtons) {
+                if(horizontalButton != tappedButton) {
+                    horizontalButton.move(factor);
+                }
+            }
+        }
+    }
+    public void moveTappedButton(float factor) {
+        if(tappedButton != null) {
+            tappedButton.move(factor);
+        }
+    }
     public void onDraw(Canvas canvas) {
         if(time == 0 && horizontalButtons.size()>0) {
             w = canvas.getWidth();
